@@ -1,39 +1,14 @@
-# ruff: noqa: F405, F403
+# ruff: noqa: F405, F403, F811
 
 from fasthtml.common import *
 
-from passlib.context import CryptContext
+from db import users
+from components import LogForm, styles
+from password import basic_auth, get_password_hash, verify_password
 
-from functools import wraps
-
-custom_styles = Style("""
-.mw-960 { max-width: 960px; }
-.mw-480 { max-width: 480px; }
-.mx-auto { margin-left: auto; margin-right: auto; }
-
-""")
-
-app, rt = fast_app(live=True, debug=True, hdrs=(custom_styles,))
-
-db = database("data/users.db")
-
-users = db.t.users
-
-if users not in db.t:
-    users.create(dict(email=str, password=str), pk="email")
+app, rt = fast_app(live=True, debug=True, hdrs=[styles])
 
 User = users.dataclass()
-
-
-def MyForm(btn_text, target):
-    return Form(
-        Input(id="email", type="email", placeholder="Email", required=True),
-        Input(id="password", type="password", placeholder="Password", required=True),
-        Button(btn_text, type="submit"),
-        Span(id="error", style="color:red"),
-        hx_post=target,
-        hx_target="#error",
-    )
 
 
 @rt("/register")
@@ -41,19 +16,12 @@ def get():
     return Container(
         Article(
             H1("Register"),
-            MyForm("Register", "/register"),
+            LogForm("Register", "/register"),
             Hr(),
             P("Already have an account? ", A("Login", href="/login")),
             cls="mw-480 mx-auto",
         )
     )
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-def get_password_hash(password):
-    return pwd_context.hash(password)
 
 
 @rt("/register")
@@ -74,16 +42,12 @@ def get():
     return Container(
         Article(
             H1("Login"),
-            MyForm("Login", target="/login"),
+            LogForm("Login", target="/login"),
             Hr(),
             P("Want to create an Account? ", A("Register", href="/register")),
             cls="mw-480 mx-auto",
         )
     )
-
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
 
 
 @rt("/login")
@@ -99,16 +63,6 @@ def post(session, email: str, password: str):
     session["auth"] = user.email
 
     return HttpHeader("HX-Redirect", "/dashboard")
-
-
-def basic_auth(f):
-    @wraps(f)
-    def wrapper(session, *args, **kwargs):
-        if "auth" not in session:
-            return Response("Not Authorized", status_code=401)
-        return f(session, *args, **kwargs)
-
-    return wrapper
 
 
 @rt("/dashboard")
