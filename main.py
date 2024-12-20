@@ -74,6 +74,7 @@ def get(session):
 @rt("/reach")
 @basic_auth
 def post(session):
+    print("Data received in /reach POST request:", type (session), session)
     return "Ok"
 
 
