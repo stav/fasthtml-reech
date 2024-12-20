@@ -1,4 +1,6 @@
-from fasthtml.common import Button, Form, Input, Span, Style
+# ruff: noqa: F405, F403
+
+from fasthtml.common import *
 
 
 styles = Style("""
@@ -17,4 +19,18 @@ def LogForm(btn_text, target):
         Span(id="error", style="color:red"),
         hx_post=target,
         hx_target="#error",
+    )
+
+
+def Dashboard(session):
+    return Container(
+        H1("Dashboard"),
+        Form(
+            Group(
+                Input(id="url", type="url", placeholder="Enter URL", required=True),
+                Button("Reach", type="submit"),
+            ),
+            hx_post="/reach",
+        ),
+        Button("Logout", hx_post="/logout"),
     )

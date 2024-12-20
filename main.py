@@ -3,7 +3,7 @@
 from fasthtml.common import *
 
 from db import users
-from components import LogForm, styles
+from components import Dashboard, LogForm, styles
 from password import basic_auth, get_password_hash, verify_password
 
 app, rt = fast_app(live=True, debug=True, hdrs=[styles])
@@ -68,7 +68,13 @@ def post(session, email: str, password: str):
 @rt("/dashboard")
 @basic_auth
 def get(session):
-    return Container(H1("Dashboard"), Button("Logout", hx_post="/logout"))
+    return Dashboard(session)
+
+
+@rt("/reach")
+@basic_auth
+def post(session):
+    return "Ok"
 
 
 @rt("/logout")
