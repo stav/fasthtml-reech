@@ -48,8 +48,8 @@ def Reach(url: str):
 
     csv_reader = csv.reader(StringIO(response.text))
     for row in csv_reader:
-        month, year, _, current, _, expected, *_ = row
         try:
+            month, year, _, current, _, expected, *_ = row
             assert year.isdigit()
             float(current)
             float(expected)

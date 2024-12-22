@@ -2,9 +2,9 @@
 
 from fasthtml.common import *
 
+from auth import basic_auth, get_login, get_register, post_login, post_register
+from components import Dashboard, Logout, Reach, styles
 from db import users
-from components import Dashboard, LogForm, Logout, Reach, styles
-from password import basic_auth, get_password_hash, verify_password
 
 app, rt = fast_app(live=True, debug=True, hdrs=[styles])
 
@@ -13,56 +13,22 @@ User = users.dataclass()
 
 @rt("/register")
 def get():
-    return Container(
-        Article(
-            H1("Register"),
-            LogForm("Register", "/register"),
-            Hr(),
-            P("Already have an account? ", A("Login", href="/login")),
-            cls="mw-480 mx-auto",
-        )
-    )
+    return get_register()
 
 
 @rt("/register")
 def post(email: str, password: str):
-    try:
-        users[email]
-        return "User already exists"
-    except NotFoundError:
-        new_user = User(email=email, password=get_password_hash(password))
-
-        users.insert(new_user)
-
-        return HttpHeader("HX-Redirect", "/login")
+    return post_register(email, password)
 
 
 @rt("/login")
 def get():
-    return Container(
-        Article(
-            H1("Login"),
-            LogForm("Login", target="/login"),
-            Hr(),
-            P("Want to create an Account? ", A("Register", href="/register")),
-            cls="mw-480 mx-auto",
-        )
-    )
+    return get_login()
 
 
 @rt("/login")
 def post(session, email: str, password: str):
-    try:
-        user = users[email]
-    except NotFoundError:
-        return "Email or password are incorrect"
-
-    if not verify_password(password, user.password):
-        return "Email or password are incorrect"
-
-    session["auth"] = user.email
-
-    return HttpHeader("HX-Redirect", "/dashboard")
+    return post_login(session, email, password)
 
 
 @rt("/dashboard")
