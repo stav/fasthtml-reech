@@ -3,7 +3,8 @@
 from fasthtml.common import *
 
 from auth import basic_auth, get_login, get_register, post_login, post_register
-from components import Dashboard, Logout, Reach
+from components import Dashboard, Logout
+from reach import Reach
 
 
 def route(rt):
