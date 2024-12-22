@@ -1,8 +1,10 @@
 # ruff: noqa: F405, F403
 
-from bs4 import BeautifulSoup
-from fasthtml.common import *
+import csv
 import requests
+
+from io import StringIO
+from fasthtml.common import *
 
 
 styles = Style(
@@ -41,11 +43,29 @@ def Dashboard():
 
 
 def Reach(url: str):
-    print("Data received in /reach POST request:", type(url), url)
     response = requests.get(url)
-    soup = BeautifulSoup(response.content, "html.parser")
-    print("Contents of the page:", soup.text)
-    return Card(Code(soup.text), header=A(url, href=url))
+    rows = []
+
+    csv_reader = csv.reader(StringIO(response.text))
+    for row in csv_reader:
+        month, year, _, current, _, expected, *_ = row
+        try:
+            assert year.isdigit()
+            float(current)
+            float(expected)
+            data = (
+                month,
+                year,
+                f"{float(current):,.1f}",
+                f"{float(expected):,.1f}",
+            )
+            rows.append(data)
+            print(data)
+
+        except (AssertionError, ValueError):
+            print("Invalid data:", row)
+
+    return Card(Pre(rows), header=A(url, href=url))
 
 
 def Logout(session):
