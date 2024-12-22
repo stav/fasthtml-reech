@@ -106,3 +106,14 @@ Installing collected packages: pip
       Successfully uninstalled pip-24.2
 Successfully installed pip-24.3.1
 
+└─▪ python main.py
+Link: http://localhost:5001
+INFO:     Will watch for changes in these directories: ['/home/stav/Work/Python/FastHTML/fasthtml-reech']
+INFO:     Uvicorn running on http://0.0.0.0:5001 (Press CTRL+C to quit)
+INFO:     Started reloader process [1061976] using WatchFiles
+INFO:     Started server process [1061979]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:52962 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     ('127.0.0.1', 52978) - "WebSocket /live-reload" [accepted]
+INFO:     connection open
