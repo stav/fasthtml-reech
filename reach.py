@@ -15,6 +15,7 @@ from fh_altair import altair2fasthtml
 def generate_chart(rows):
     months_years = [f"{row[0]} {row[1]}" for row in rows]
     current_values = [float(row[2]) for row in rows]
+    expected_values = [float(row[3]) for row in rows]
 
     pltr = pd.DataFrame({"x": months_years, "y": current_values})
     chart = (
@@ -22,6 +23,14 @@ def generate_chart(rows):
         .mark_line()
         .encode(y="y", x=alt.X("x", sort=None))
         .properties(width=400, height=200)
+    )
+
+    pltr['expected'] = expected_values
+
+    chart += (
+        alt.Chart(pltr)
+        .mark_line(color='red')
+        .encode(y="expected", x=alt.X("x", sort=None))
     )
     return altair2fasthtml(chart)
 
