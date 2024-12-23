@@ -9,6 +9,14 @@ from reach import Reach
 
 def route(rt):
 
+    @rt
+    def index():
+        return Title("Reech Demo"), Div(
+            H1("Reech Demo"),
+            A("Dashboard", href="/dashboard"),
+            style="margin: 20px",
+        )
+
     @rt("/register")
     def get():
         return get_register()
